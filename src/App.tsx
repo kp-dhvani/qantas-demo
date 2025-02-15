@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
-import { DataResponse, FetchState, ListingProps } from "./components/lib/types";
-import ListingPreview from "./components/Preview";
+import {
+	DataResponse,
+	FetchState,
+	ListingProps,
+	SortOrder,
+} from "./components/lib/types";
 import Price from "./components/Price";
+import Preview from "./components/Preview";
+import { createSortOptions, sortDataByPrice } from "./components/lib/util";
+import Select from "./components/core/Select";
 
 function App() {
 	const [properties, setProperties] = useState<ListingProps[]>();
 	const [dataFetchState, setDataFetchState] = useState(FetchState.INIT);
+	const [sortOrder, setSortOrder] = useState<SortOrder>(
+		SortOrder.PRICE_HIGH_LOW
+	);
+
 	useEffect(() => {
 		const abortController = new AbortController();
 		const fetchProperties = async () => {
@@ -16,7 +27,6 @@ function App() {
 				});
 				const data: DataResponse = await response.json();
 				setProperties(data.results);
-				console.log(data.results);
 				setDataFetchState(FetchState.SUCCESS);
 			} catch (error) {
 				if (error instanceof Error && error.name === "AbortError") {
@@ -32,6 +42,17 @@ function App() {
 		};
 	}, []);
 
+	useEffect(() => {
+		setProperties(sortDataByPrice(properties, sortOrder));
+	}, [properties, sortOrder]);
+
+	const handleSortOrderChange = (value: string) => {
+		// type guard to ensure value is a valid SortOrder
+		if (Object.values(SortOrder).includes(value as SortOrder)) {
+			setSortOrder(value as SortOrder);
+		}
+	};
+
 	const renderListings = () => {
 		const totalListingText = () => {
 			const totalLength = properties?.length ?? 0;
@@ -44,12 +65,22 @@ function App() {
 				""
 			);
 		};
+		const renderSortSelect = () => {
+			return (
+				<Select
+					options={createSortOptions()}
+					value={sortOrder}
+					onChange={handleSortOrderChange}
+				/>
+			);
+		};
 		return (
 			<>
 				{totalListingText()}
+				{renderSortSelect()}
 				{properties?.map((listing) => (
 					<div key={listing.id}>
-						<ListingPreview
+						<Preview
 							listingImage={listing.property.previewImage}
 							listingPromotion={listing.offer.promotion}
 						/>
@@ -65,7 +96,7 @@ function App() {
 				<img src="/qantas-logo.png" className="Qantas logo" alt="Qantas logo" />
 			</header>
 			<main>
-				<div>
+				<div className="flex md:mx-16">
 					{dataFetchState === FetchState.LOADING && (
 						<div data-testid="loading-state">Loading...</div>
 					)}

@@ -60,3 +60,18 @@ export enum FetchState {
 	SUCCESS = "success",
 	ERROR = "error",
 }
+
+export enum SortOrder {
+	PRICE_HIGH_LOW = "price-high-low",
+	PRICE_LOW_HIGH = "price-low-high",
+}
+
+export const SORT_OPTIONS = {
+	[SortOrder.PRICE_HIGH_LOW]: "Price high-low",
+	[SortOrder.PRICE_LOW_HIGH]: "Price low-high",
+} as const;
+
+export interface SortOption {
+	value: SortOrder;
+	label: string;
+}
