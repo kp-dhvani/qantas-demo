@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
-import qantasLogo from "./assets/qantas-logo.png";
-import { DataResponse, ListingProps } from "./components/lib/types";
+import { DataResponse, FetchState, ListingProps } from "./components/lib/types";
 import ListingPreview from "./components/Preview";
 import Price from "./components/Price";
-
-enum FetchState {
-	INIT = "init",
-	LOADING = "loading",
-	SUCCESS = "success",
-	ERROR = "error",
-}
 
 function App() {
 	const [properties, setProperties] = useState<ListingProps[]>();
@@ -41,28 +33,49 @@ function App() {
 	}, []);
 
 	const renderListings = () => {
-		if (dataFetchState === FetchState.ERROR) {
-			return <p>hhhmmmm... something is not right, please try again!</p>;
-		}
-		return properties?.map((listing) => (
-			<div key={listing.id}>
-				<ListingPreview
-					listingImage={listing.property.previewImage}
-					listingPromotion={listing.offer.promotion}
-				/>
-				<Price displayPrice={listing.offer.displayPrice} />
-			</div>
-		));
+		const totalListingText = () => {
+			const totalLength = properties?.length ?? 0;
+			// is the city coming from data?
+			return totalLength > 0 ? (
+				<p>
+					{totalLength} hotel{totalLength > 1 ? `s` : ""} in Sydney
+				</p>
+			) : (
+				""
+			);
+		};
+		return (
+			<>
+				{totalListingText()}
+				{properties?.map((listing) => (
+					<div key={listing.id}>
+						<ListingPreview
+							listingImage={listing.property.previewImage}
+							listingPromotion={listing.offer.promotion}
+						/>
+						<Price displayPrice={listing.offer.displayPrice} />
+					</div>
+				))}
+			</>
+		);
 	};
 	return (
 		<div>
 			<header>
-				<img src={qantasLogo} className="Qantas logo" alt="Qantas logo" />
+				<img src="/qantas-logo.png" className="Qantas logo" alt="Qantas logo" />
 			</header>
 			<main>
-				{dataFetchState === FetchState.LOADING
-					? "Loading..."
-					: renderListings()}
+				<div>
+					{dataFetchState === FetchState.LOADING && (
+						<div data-testid="loading-state">Loading...</div>
+					)}
+					{dataFetchState === FetchState.ERROR && (
+						<div data-testid="error-state">Error loading data</div>
+					)}
+					{dataFetchState === FetchState.SUCCESS && (
+						<div data-testid="success-state">{renderListings()}</div>
+					)}
+				</div>
 			</main>
 		</div>
 	);

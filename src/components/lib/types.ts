@@ -53,3 +53,10 @@ export interface ListingProps {
 export interface DataResponse {
 	results: ListingProps[];
 }
+
+export enum FetchState {
+	INIT = "init",
+	LOADING = "loading",
+	SUCCESS = "success",
+	ERROR = "error",
+}

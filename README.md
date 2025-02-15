@@ -41,7 +41,7 @@ npm run lint    # using npm
 yarn lint      # using yarn
 
 # Watch mode for tests
-npm test -- --watch    # using npm
+npm test    # using npm
 # OR
-yarn test --watch     # using yarn
+yarn test     # using yarn
 ```

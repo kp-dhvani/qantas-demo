@@ -13,11 +13,10 @@ function Price({ displayPrice }: PriceProps) {
 	const formattedPrice = amount.toFixed(2);
 	return (
 		<div>
+			<p>1 night total {currency}</p>
 			<p>
-				<span>1</span> night total {currencySign}
-			</p>
-			<p>
-				{currencySign} ${formattedPrice}
+				{currencySign !== currency ? <sup>{currencySign}</sup> : ""}
+				{formattedPrice} {currencySign === currency ? currency : ""}
 			</p>
 		</div>
 	);
