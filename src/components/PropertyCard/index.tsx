@@ -1,4 +1,4 @@
-import { PropertyCardValues } from "../lib/types";
+import { PropertyCardValues } from "../../lib/types";
 import Ratings from "./Ratings";
 
 function PropertyCard({

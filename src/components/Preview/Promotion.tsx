@@ -1,4 +1,4 @@
-import { PromotionProps } from "../lib/types";
+import { PromotionProps } from "../../lib/types";
 
 function Promotion({ title }: Readonly<PromotionProps>) {
 	return (

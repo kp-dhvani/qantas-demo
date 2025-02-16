@@ -1,4 +1,4 @@
-import { PreviewImage, PromotionProps } from "../lib/types";
+import { PreviewImage, PromotionProps } from "../../lib/types";
 import Image from "./Image";
 import Promotion from "./Promotion";
 

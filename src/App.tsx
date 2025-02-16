@@ -1,13 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-	DataResponse,
-	FetchState,
-	ListingProps,
-	SortOrder,
-} from "./components/lib/types";
+import { DataResponse, FetchState, ListingProps, SortOrder } from "./lib/types";
 import Price from "./components/Price";
 import Preview from "./components/Preview";
-import { createSortOptions, sortDataByPrice } from "./components/lib/util";
+import { createSortOptions, sortDataByPrice } from "./lib/util";
 import Select from "./components/core/Select";
 import PropertyCard from "./components/PropertyCard";
 

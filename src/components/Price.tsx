@@ -1,4 +1,4 @@
-import { Offer } from "./lib/types";
+import { Offer } from "../lib/types";
 
 interface PriceProps {
 	readonly displayPrice: Offer["displayPrice"];

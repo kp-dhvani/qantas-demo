@@ -1,4 +1,4 @@
-import { PreviewImage } from "../lib/types";
+import { PreviewImage } from "../../lib/types";
 
 function Image({ caption, url }: Readonly<PreviewImage>) {
 	return (
