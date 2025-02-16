@@ -7,10 +7,10 @@ function Preview({
 	listingPromotion,
 }: Readonly<{ listingImage: PreviewImage; listingPromotion: PromotionProps }>) {
 	return (
-		<>
+		<div className="relative">
 			<Image {...listingImage} />
 			<Promotion {...listingPromotion} />
-		</>
+		</div>
 	);
 }
 

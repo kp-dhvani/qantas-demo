@@ -2,11 +2,11 @@ import { PreviewImage } from "../lib/types";
 
 function Image({ caption, url }: Readonly<PreviewImage>) {
 	return (
-		<div className="flex justify-center my-10">
+		<div className="md:mr-4">
 			<img
 				src={url}
 				alt={caption}
-				className="max-w-full h-auto"
+				className="max-w-full h-auto w-full"
 				loading="lazy"
 			/>
 		</div>

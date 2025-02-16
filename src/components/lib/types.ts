@@ -11,7 +11,7 @@ export interface PreviewImage {
 
 export interface Rating {
 	ratingValue: number;
-	ratingType: string;
+	ratingType: "star" | "self";
 }
 
 export interface Property {
@@ -33,14 +33,14 @@ export interface Promotion {
 }
 
 export interface CancellationOption {
-	cancellationType: string;
+	cancellationType: "NOT_REFUNDABLE" | "FREE_CANCELLATION";
 }
 
 export interface Offer {
 	promotion: Promotion;
 	name: string;
 	displayPrice: Price;
-	savings: Price;
+	savings: Price | null;
 	cancellationOption: CancellationOption;
 }
 
@@ -74,4 +74,12 @@ export const SORT_OPTIONS = {
 export interface SortOption {
 	value: SortOrder;
 	label: string;
+}
+
+export interface PropertyCardValues {
+	rating: Property["rating"];
+	title: Property["title"];
+	address: Property["address"];
+	offerName: Offer["name"];
+	cancellationOption: Offer["cancellationOption"];
 }

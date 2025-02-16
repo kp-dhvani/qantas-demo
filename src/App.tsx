@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	DataResponse,
 	FetchState,
@@ -9,6 +9,7 @@ import Price from "./components/Price";
 import Preview from "./components/Preview";
 import { createSortOptions, sortDataByPrice } from "./components/lib/util";
 import Select from "./components/core/Select";
+import PropertyCard from "./components/PropertyCard";
 
 function App() {
 	const [properties, setProperties] = useState<ListingProps[]>();
@@ -42,9 +43,10 @@ function App() {
 		};
 	}, []);
 
-	useEffect(() => {
-		setProperties(sortDataByPrice(properties, sortOrder));
-	}, [properties, sortOrder]);
+	const sortedProperties = useMemo(
+		() => sortDataByPrice(properties, sortOrder),
+		[properties, sortOrder]
+	);
 
 	const handleSortOrderChange = (value: string) => {
 		// type guard to ensure value is a valid SortOrder
@@ -55,7 +57,7 @@ function App() {
 
 	const renderListings = () => {
 		const totalListingText = () => {
-			const totalLength = properties?.length ?? 0;
+			const totalLength = sortedProperties?.length ?? 0;
 			// is the city coming from data?
 			return totalLength > 0 ? (
 				<p>
@@ -76,15 +78,33 @@ function App() {
 		};
 		return (
 			<>
-				{totalListingText()}
-				{renderSortSelect()}
-				{properties?.map((listing) => (
-					<div key={listing.id}>
+				<div className="flex items-center justify-between mb-5">
+					{totalListingText()}
+					{renderSortSelect()}
+				</div>
+				{sortedProperties?.map((listing, index) => (
+					<div key={listing.id} className="flex mx-auto md:flex-row flex-col">
 						<Preview
 							listingImage={listing.property.previewImage}
 							listingPromotion={listing.offer.promotion}
 						/>
-						<Price displayPrice={listing.offer.displayPrice} />
+						<div
+							className={`flex flex-col md:flex-row justify-between border-b border-y-gray-200 w-full md:py-2 ${
+								index === 0 ? "border-t" : ""
+							}`}
+						>
+							<PropertyCard
+								address={listing.property.address}
+								cancellationOption={listing.offer.cancellationOption}
+								offerName={listing.offer.name}
+								rating={listing.property.rating}
+								title={listing.property.title}
+							/>
+							<Price
+								displayPrice={listing.offer.displayPrice}
+								savings={listing.offer.savings}
+							/>
+						</div>
 					</div>
 				))}
 			</>
@@ -95,8 +115,8 @@ function App() {
 			<header>
 				<img src="/qantas-logo.png" className="Qantas logo" alt="Qantas logo" />
 			</header>
-			<main>
-				<div className="flex md:mx-16">
+			<main className="flex justify-center mx-5 md:mx-16 rounded-lg">
+				<div className="flex p-6 w-full">
 					{dataFetchState === FetchState.LOADING && (
 						<div data-testid="loading-state">Loading...</div>
 					)}
@@ -104,7 +124,9 @@ function App() {
 						<div data-testid="error-state">Error loading data</div>
 					)}
 					{dataFetchState === FetchState.SUCCESS && (
-						<div data-testid="success-state">{renderListings()}</div>
+						<div data-testid="success-state" className="w-full">
+							{renderListings()}
+						</div>
 					)}
 				</div>
 			</main>
