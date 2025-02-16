@@ -12,10 +12,12 @@ function PropertyCard({
 		<div className="flex md:flex-row flex-col">
 			<div className="mr-10">
 				<p className="text-bold text-xl">{title}</p>
-				<p className="text-xs text-gray-600">{address}</p>
+				<p className="text-xs text-gray-600">{address.toString()}</p>
 				<p className="mt-5 underline text-red-900">{offerName}</p>
 				{cancellationOption.cancellationType === "FREE_CANCELLATION" ? (
-					<p className="text-green-900 mt-8">Free cancellation</p>
+					<p className="text-green-900 mt-8" data-testid="free-cancellation">
+						Free cancellation
+					</p>
 				) : null}
 			</div>
 			<Ratings type={rating.ratingType} value={rating.ratingValue} />

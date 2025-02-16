@@ -5,10 +5,10 @@ interface RatingProps {
 }
 
 function Ratings({ value, type, maxValue = 5 }: Readonly<RatingProps>) {
-	const roundedValue = Math.round(value * 2) / 2; // Round to nearest 0.5
-	const filledItems = Math.floor(roundedValue);
-	const hasHalf = roundedValue % 1 !== 0;
-	const emptyItems = maxValue - filledItems - (hasHalf ? 1 : 0);
+	const roundedValue = Math.round(value * 2) / 2; // round to nearest 0.5
+	const filledItems = Math.floor(roundedValue); // number of fully filled items
+	const hasHalf = roundedValue % 1 !== 0; // whether there's a half-filled item
+	const emptyItems = maxValue - filledItems - (hasHalf ? 1 : 0); // remaining empty items
 
 	const renderRatingItem = (
 		filled: boolean,
@@ -18,6 +18,7 @@ function Ratings({ value, type, maxValue = 5 }: Readonly<RatingProps>) {
 		if (type === "star") {
 			return (
 				<svg
+					data-testid="rating-star"
 					key={index}
 					className="w-5 h-5"
 					viewBox="0 0 24 24"
@@ -36,7 +37,12 @@ function Ratings({ value, type, maxValue = 5 }: Readonly<RatingProps>) {
 			);
 		} else {
 			return (
-				<svg key={index} className="w-5 h-5" viewBox="0 0 24 24">
+				<svg
+					key={index}
+					className="w-5 h-5"
+					viewBox="0 0 24 24"
+					data-testid="self-icon"
+				>
 					<circle
 						cx="12"
 						cy="12"
@@ -53,15 +59,17 @@ function Ratings({ value, type, maxValue = 5 }: Readonly<RatingProps>) {
 	return (
 		<div className="flex gap-1 mt-5 md:m-1">
 			{/* filled items */}
-			{[...Array(filledItems)].map((_, i) => renderRatingItem(true, i))}
+			{filledItems > 0 &&
+				[...Array(filledItems)].map((_, i) => renderRatingItem(true, i))}
 
 			{/* half item if needed */}
 			{hasHalf && renderRatingItem(false, filledItems, true)}
 
 			{/* empty items */}
-			{[...Array(emptyItems)].map((_, i) =>
-				renderRatingItem(false, filledItems + (hasHalf ? 1 : 0) + i)
-			)}
+			{emptyItems > 0 &&
+				[...Array(emptyItems)].map((_, i) =>
+					renderRatingItem(false, filledItems + (hasHalf ? 1 : 0) + i)
+				)}
 		</div>
 	);
 }

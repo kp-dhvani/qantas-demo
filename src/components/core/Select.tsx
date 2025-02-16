@@ -11,7 +11,6 @@ interface SelectProps {
 	onChange: (value: string) => void;
 	label?: string;
 	placeholder?: string;
-	className?: string;
 	disabled?: boolean;
 	required?: boolean;
 	name?: string;
@@ -24,7 +23,6 @@ const Select: React.FC<SelectProps> = ({
 	onChange,
 	label,
 	placeholder = "Select an option",
-	className = "",
 	disabled = false,
 	required = false,
 	name,
@@ -48,14 +46,6 @@ const Select: React.FC<SelectProps> = ({
 				onChange={handleChange}
 				disabled={disabled}
 				required={required}
-				className={`
-          block w-full px-3 py-2 
-          bg-white border border-gray-300 rounded-md 
-          shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 
-          focus:border-blue-500 text-sm
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"}
-          ${className}
-        `}
 			>
 				{placeholder && (
 					<option value="" disabled>

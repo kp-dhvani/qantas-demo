@@ -3,6 +3,8 @@ import { screen, waitFor } from "@testing-library/dom";
 import App from "./App";
 import ListingPreview from "./components/Preview";
 import Price from "./components/Price";
+import Ratings from "./components/PropertyCard/Ratings";
+import PropertyCard from "./components/PropertyCard";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -96,10 +98,15 @@ describe("App Component", () => {
 					property: {
 						propertyId: "P107802",
 						title: "Primus Hotel Sydney",
+						address: ["Primus Hotel", "Sydney"],
 						previewImage: {
 							url: "https://unsplash.it/145/125/?random",
 							caption: "Image of Primus Hotel Sydney",
 							imageType: "PRIMARY",
+						},
+						rating: {
+							ratingValue: 4.5,
+							ratingType: "self",
 						},
 					},
 					offer: {
@@ -110,6 +117,9 @@ describe("App Component", () => {
 						displayPrice: {
 							amount: 375.0,
 							currency: "AUD",
+						},
+						cancellationOption: {
+							cancellationType: "NOT_REFUNDABLE",
 						},
 					},
 				},
@@ -176,9 +186,28 @@ describe("Price Component", () => {
 			expect(screen.getByText("$")).toBeInTheDocument();
 		});
 
-		it('should render "1 night total AUD" text', () => {
+		it('should render "1 night total (AUD)" text', () => {
 			render(<Price {...mockPriceProps} />);
-			expect(screen.getByText(/1 night total AUD/i)).toBeInTheDocument();
+			expect(
+				screen.getByText((_, element) => {
+					// @ts-expect-error -- ignore
+					const normalizedText = element!.textContent
+						.replace(/\s+/g, " ")
+						.trim();
+					return normalizedText === "1 night total (AUD)";
+				})
+			).toBeInTheDocument();
+		});
+
+		it("renders savings", () => {
+			render(
+				<Price
+					displayPrice={mockPriceProps.displayPrice}
+					savings={mockPriceProps.displayPrice}
+				/>
+			);
+			const savingsElement = screen.getByText(/Save AUD 199\.99/);
+			expect(savingsElement).toBeInTheDocument();
 		});
 
 		it("should format decimal numbers correctly", () => {
@@ -210,6 +239,121 @@ describe("Price Component", () => {
 		it("should render the correct price with currency", () => {
 			render(<Price {...mockPriceProps} />);
 			expect(screen.getByText(/150.50/i)).toBeInTheDocument();
+		});
+	});
+
+	describe("Ratings Component", () => {
+		const checkSVGPropertiesForCircles = (
+			svgElements: HTMLElement[],
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			expectedProperties: any[]
+		) => {
+			svgElements.forEach((svg, index) => {
+				const expectedFill = expectedProperties[index];
+				expect(svg.querySelector("circle")?.getAttribute("fill")).toBe(
+					expectedFill
+				);
+			});
+		};
+
+		it("handles 0 rating", () => {
+			render(<Ratings value={0} type="self" />);
+			const circles = screen.getAllByTestId("self-icon");
+			expect(circles).toHaveLength(5);
+			checkSVGPropertiesForCircles(circles, [
+				"none", // Filled
+				"none", // Filled
+				"none", // Filled
+				"none", // Filled
+				"none", // Empty
+			]);
+		});
+		describe("Star Rating Type", () => {
+			it("renders correct number of stars for integer value", () => {
+				render(<Ratings value={4} type="star" />);
+				const stars = screen.getAllByTestId("rating-star");
+				expect(stars).toHaveLength(5);
+			});
+
+			it("renders half star correctly", () => {
+				render(<Ratings value={4.5} type="star" />);
+				const stars = screen.getAllByTestId("rating-star");
+				const expectedFill = [
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"url(#halfGradient)", // Half
+				];
+				expect(stars).toHaveLength(5);
+				stars.forEach((svg, index) => {
+					expect(svg.getAttribute("fill")).toBe(expectedFill[index]);
+				});
+			});
+
+			it("respects custom maxValue", () => {
+				render(<Ratings value={3} type="star" maxValue={6} />);
+				const stars = screen.getAllByTestId("rating-star");
+				expect(stars).toHaveLength(6);
+			});
+		});
+
+		describe("Self Rating Type", () => {
+			it("renders correct number of circles for integer value", () => {
+				render(<Ratings value={4} type="self" />);
+				const circles = screen.getAllByTestId("self-icon");
+				expect(circles).toHaveLength(5);
+
+				// Check filled vs empty circles
+				checkSVGPropertiesForCircles(circles, [
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"none", // Empty
+				]);
+			});
+
+			it("renders half circle correctly", () => {
+				render(<Ratings value={4.5} type="self" />);
+				const circles = screen.getAllByTestId("self-icon");
+				expect(circles).toHaveLength(5);
+
+				// Check for half circle
+				checkSVGPropertiesForCircles(circles, [
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"#FFD700", // Filled
+					"url(#halfGradient)", // Half
+				]);
+			});
+		});
+	});
+
+	describe("Property Card", () => {
+		it("renders details correctly", () => {
+			const listing = mockData.results[0];
+			render(
+				<PropertyCard
+					address={listing.property.address}
+					offerName={listing.offer.name}
+					title={listing.property.title}
+					cancellationOption={{ cancellationType: "FREE_CANCELLATION" }}
+					// @ts-expect-error - ignore
+					rating={listing.property.rating}
+				/>
+			);
+			expect(
+				screen.getByText(mockData.results[0].property.title)
+			).toBeInTheDocument();
+			expect(
+				screen.getByText(mockData.results[0].property.address.toString())
+			).toBeInTheDocument();
+			expect(
+				screen.getByText(mockData.results[0].offer.name)
+			).toBeInTheDocument();
+			expect(screen.getByTestId("free-cancellation")).toBeInTheDocument();
 		});
 	});
 });

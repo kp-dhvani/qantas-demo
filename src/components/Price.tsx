@@ -2,7 +2,7 @@ import { Offer } from "./lib/types";
 
 interface PriceProps {
 	readonly displayPrice: Offer["displayPrice"];
-	readonly savings: Offer["savings"];
+	readonly savings?: Offer["savings"];
 }
 
 /**
