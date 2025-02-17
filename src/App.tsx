@@ -113,10 +113,14 @@ function App() {
 			<main className="flex justify-center mx-5 md:mx-16 rounded-lg">
 				<div className="flex p-6 w-full">
 					{dataFetchState === FetchState.LOADING && (
-						<div data-testid="loading-state">Loading...</div>
+						<div data-testid="loading-state">
+							<p>Loading...</p>
+						</div>
 					)}
 					{dataFetchState === FetchState.ERROR && (
-						<div data-testid="error-state">Error loading data</div>
+						<div data-testid="error-state">
+							<p>Error loading data</p>
+						</div>
 					)}
 					{dataFetchState === FetchState.SUCCESS && (
 						<div data-testid="success-state" className="w-full">
